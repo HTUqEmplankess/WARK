@@ -1,3 +1,6 @@
+// *WARK* : Smart Contactless Sleep Monitor
+
+#include <Arduino.h>
 #include "DHT.h"
 #include <Wire.h>
 #include <BH1750.h>
@@ -7,12 +10,17 @@
 const int micPin = 36;       // KY-037 Microphone (Analog)
 const int pirPin = 14;       // PIR Motion Sensor (Digital)
 const int dhtPin = 15;       // DHT22 Data Pin
-// const int trigPin = 5;    // Ultrasonic Trig Pin (commented out for now)
-// const int echoPin = 18;   // Ultrasonic Echo Pin (commented out for now)
-const int relayPin = 19;     // Relay Pin for controlling 12V LED
+const int trigPin = 5;       // Ultrasonic Trig Pin 
+const int echoPin = 18;      // Ultrasonic Echo Pin 
+const int outPin = 19;       // Ultrasonic OUT Pin (digital proximity output)
+const int relayPin = 23;     // Relay Pin for controlling 12V LED
 const int luxAnalogPin = 39; // Analog output of BH1750 (AOOR)
-const int lcdSDA = 21;       // I2C SDA
-const int lcdSCL = 22;       // I2C SCL
+const int SDA = 21;          // I2C SDA
+const int SCL = 22;          // I2C SCL
+
+// PIR
+int motionDetected = 0;
+const int pirTime = 1000;
 
 // DHT22 setup
 #define DHTTYPE DHT22
@@ -24,6 +32,7 @@ BH1750 lightMeter;
 // LCD setup
 LiquidCrystal_I2C lcd(0x27, 16, 2);  // Adjust address if needed
 
+
 void setup() {
   // Serial monitor
   Serial.begin(115200);
@@ -34,15 +43,18 @@ void setup() {
   // PIR Motion Sensor setup
   pinMode(pirPin, INPUT);
 
+  // Ultrasonic OUT Pin setup
+  pinMode(outPin, INPUT);
+
   // Relay setup
   pinMode(relayPin, OUTPUT);
-  digitalWrite(relayPin, LOW);  // Start with relay OFF
+  digitalWrite(relayPin, HIGH);  
 
   // DHT22 setup
   dht.begin();
 
   // BH1750 Light Sensor setup (I2C)
-  Wire.begin(lcdSDA, lcdSCL);  // Initialize I2C on GPIO21 (SDA) and GPIO22 (SCL)
+  Wire.begin(SDA, SCL);  // Initialize I2C on GPIO21 (SDA) and GPIO22 (SCL)
   if (!lightMeter.begin()) {
     Serial.println("BH1750 initialization failed!");
     lcd.print("BH1750 Error!");
@@ -54,45 +66,48 @@ void setup() {
   lcd.print("Initializing...");
   delay(2000);
   lcd.clear();
+  digitalWrite(relayPin, LOW);  
+
+
 }
 
 // ! Recommended to TEST 1 BY 1 device - uncomment each part of the loop 
 
 
 void loop() {
-  // lcd.clear(); // Clear the LCD for the next message
-
-  // // 1. KY-037 Microphone
+  
+  // // 1. KY-037 : TEST Pass (too weak / LCD is OK)
+  // //  lcd.clear(); // Clear the LCD for the next message
   // int soundLevel = analogRead(micPin);
-  // Serial.print("Sound Level: ");
+  // Serial.print("> Sound_Level: ");
   // Serial.println(soundLevel);
   // lcd.setCursor(0, 0);
-  // lcd.print("Sound Level:");
+  // lcd.print("Sound_Level:");
   // lcd.setCursor(0, 1);
   // lcd.print(soundLevel);
-  // delay(2000);
+  
 
-  // // 2. PIR Motion Sensor
-  // lcd.clear();
-  // int motionDetected = digitalRead(pirPin);
-  // Serial.print("Motion: ");
+  // // 2. PIR Motion Sensor : TEST Pass (too weak / relay is OK)
+  // // lcd.clear();
+  // delay(pirTime);
+  // motionDetected = digitalRead(pirPin);
+  // Serial.print("> Motion: ");
   // lcd.setCursor(0, 0);
   // lcd.print("Motion:");
-  // if (motionDetected) {
-  //   Serial.println("Detected");
-  //   lcd.setCursor(0, 1);
-  //   lcd.print("Detected");
-  //   digitalWrite(relayPin, HIGH); // Turn ON relay (12V LED ON)
-  // } else {
-  //   Serial.println("None");
+  // if (motionDetected == LOW ) {
+  //   Serial.println("0");
   //   lcd.setCursor(0, 1);
   //   lcd.print("None");
   //   digitalWrite(relayPin, LOW);  // Turn OFF relay (12V LED OFF)
+  // } else {
+  //   Serial.println("1");
+  //   lcd.setCursor(0, 1);
+  //   lcd.print("Have");
+  //   digitalWrite(relayPin, HIGH); // Turn ON relay (12V LED ON)
   // }
-  // delay(2000);
 
   // // 3. DHT22 Temperature and Humidity
-  // lcd.clear();
+  // // lcd.clear();
   // float temp = dht.readTemperature();
   // float hum = dht.readHumidity();
   // if (isnan(temp) || isnan(hum)) {
@@ -100,7 +115,7 @@ void loop() {
   //   lcd.setCursor(0, 0);
   //   lcd.print("DHT22 Error");
   // } else {
-  //   Serial.print("Temp: ");
+  //   Serial.print("> Temp: ");
   //   Serial.print(temp);
   //   Serial.print(" °C, Hum: ");
   //   Serial.print(hum);
@@ -114,37 +129,34 @@ void loop() {
   //   lcd.print(hum);
   //   lcd.print("%");
   // }
-  // delay(2000);
 
   // // 4. BH1750 Light Sensor (I2C)
-  // lcd.clear();
+  // // lcd.clear();
   // float lux = lightMeter.readLightLevel();
-  // Serial.print("Light (I2C): ");
+  // Serial.print("> Light_(I2C): ");
   // Serial.print(lux);
   // Serial.println(" lx");
   // lcd.setCursor(0, 0);
-  // lcd.print("Light (I2C):");
+  // lcd.print("Light_(I2C):");
   // lcd.setCursor(0, 1);
   // lcd.print(lux);
   // lcd.print(" lx");
-  // delay(2000);
 
   // // 5. BH1750 Light Sensor (Analog)
-  // lcd.clear();
+  // // lcd.clear();
   // int luxAnalogValue = analogRead(luxAnalogPin);
   // float luxAnalog = luxAnalogValue * (3.3 / 4095.0); // Assuming 3.3V ADC resolution
-  // Serial.print("Light (Analog): ");
+  // Serial.print("> Light_(Analog): ");
   // Serial.print(luxAnalog);
   // Serial.println(" V");
   // lcd.setCursor(0, 0);
-  // lcd.print("Light (Analog):");
+  // lcd.print("Light_(Analog):");
   // lcd.setCursor(0, 1);
   // lcd.print(luxAnalog);
   // lcd.print(" V");
-  // delay(2000);
 
-  // // 6. Ultrasonic Sensor (commented out)
-  // lcd.clear();
+  // // 6. Ultrasonic Sensor
+  // // lcd.clear();
   // digitalWrite(trigPin, LOW);
   // delayMicroseconds(2);
   // digitalWrite(trigPin, HIGH);
@@ -152,7 +164,7 @@ void loop() {
   // digitalWrite(trigPin, LOW);
   // long duration = pulseIn(echoPin, HIGH);
   // float distance = duration * 0.034 / 2;
-  // Serial.print("Distance: ");
+  // Serial.print("> Distance: ");
   // Serial.print(distance);
   // Serial.println(" cm");
   // lcd.setCursor(0, 0);
@@ -160,6 +172,21 @@ void loop() {
   // lcd.setCursor(0, 1);
   // lcd.print(distance);
   // lcd.print(" cm");
-  // delay(2000);
+
+  // // 7.Ultrasonic OUT Pin (Proximity Detection)
+  // // lcd.clear();
+  // int outState = digitalRead(outPin); // Read the OUT pin state
+  // Serial.print("> Ultrasonic_OUT: ");
+  // lcd.setCursor(0, 0);
+  // lcd.print("Ultrasonic_OUT:");
+  // if (outState == HIGH) {
+  //   Serial.println("Object Detected");
+  //   lcd.setCursor(0, 1);
+  //   lcd.print("Detected");
+  // } else {
+  //   Serial.println("No Object");
+  //   lcd.setCursor(0, 1);
+  //   lcd.print("NoObject");
+  // }
   
 }
