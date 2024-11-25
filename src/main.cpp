@@ -32,7 +32,6 @@ BH1750 lightMeter;
 // LCD setup
 LiquidCrystal_I2C lcd(0x27, 16, 2);  // Adjust address if needed
 
-
 void setup() {
   // Serial monitor
   Serial.begin(115200);
@@ -87,26 +86,26 @@ void loop() {
   // lcd.print(soundLevel);
   
 
-  // 2. PIR Motion Sensor : TEST Pass (too weak / relay is OK)
-  // lcd.clear();
-  delay(pirTime);
-  motionDetected = digitalRead(pirPin);
-  Serial.print("> Motion: ");
-  lcd.setCursor(0, 0);
-  lcd.print("Motion:");
-  if (motionDetected == LOW ) {
-    Serial.println("0");
-    lcd.setCursor(0, 1);
-    lcd.print("None");
-    digitalWrite(relayPin, LOW);  // Turn OFF relay (12V LED OFF)
-  } else {
-    Serial.println("1");
-    lcd.setCursor(0, 1);
-    lcd.print("Have");
-    digitalWrite(relayPin, HIGH); // Turn ON relay (12V LED ON)
-  }
+  // // 2. PIR Motion Sensor : TEST Pass (too weak / relay is OK)
+  // // lcd.clear();
+  // delay(pirTime);
+  // motionDetected = digitalRead(pirPin);
+  // Serial.print("> Motion: ");
+  // lcd.setCursor(0, 0);
+  // lcd.print("Motion:");
+  // if (motionDetected == LOW ) {
+  //   Serial.println("0");
+  //   lcd.setCursor(0, 1);
+  //   lcd.print("None");
+  //   digitalWrite(relayPin, LOW);  // Turn OFF relay (12V LED OFF)
+  // } else {
+  //   Serial.println("1");
+  //   lcd.setCursor(0, 1);
+  //   lcd.print("Have");
+  //   digitalWrite(relayPin, HIGH); // Turn ON relay (12V LED ON)
+  // }
 
-  // // 3. DHT22 Temperature and Humidity
+  // // 3. DHT22 Temperature and Humidity : TEST Pass
   // // lcd.clear();
   // float temp = dht.readTemperature();
   // float hum = dht.readHumidity();
@@ -130,62 +129,54 @@ void loop() {
   //   lcd.print("%");
   // }
 
-  // // 4. BH1750 Light Sensor (I2C)
-  // // lcd.clear();
+  // // 4. BH1750 Light Sensor : TEST Fail [CANNOT FIND IC] and [Something Wrong With AOOR]
   // float lux = lightMeter.readLightLevel();
-  // Serial.print("> Light_(I2C): ");
+  // Serial.print("> ");
+  // Serial.print("LightC: ");
   // Serial.print(lux);
-  // Serial.println(" lx");
+  // Serial.print(" lx, ");
   // lcd.setCursor(0, 0);
-  // lcd.print("Light_(I2C):");
-  // lcd.setCursor(0, 1);
+  // lcd.print("LightC:");
   // lcd.print(lux);
   // lcd.print(" lx");
-
-  // // 5. BH1750 Light Sensor (Analog)
-  // // lcd.clear();
-  // int luxAnalogValue = analogRead(luxAnalogPin);
-  // float luxAnalog = luxAnalogValue * (3.3 / 4095.0); // Assuming 3.3V ADC resolution
-  // Serial.print("> Light_(Analog): ");
+  // int luxAnalog = analogRead(luxAnalogPin);
+  // Serial.print("LightA: ");
   // Serial.print(luxAnalog);
   // Serial.println(" V");
-  // lcd.setCursor(0, 0);
-  // lcd.print("Light_(Analog):");
   // lcd.setCursor(0, 1);
+  // lcd.print("LightA:");
   // lcd.print(luxAnalog);
-  // lcd.print(" V");
 
-  // // 6. Ultrasonic Sensor
-  // // lcd.clear();
+  // 5. Ultrasonic Sensor: TEST Fail [Maybe Wrong Algo]
+  // lcd.clear();
   // digitalWrite(trigPin, LOW);
   // delayMicroseconds(2);
   // digitalWrite(trigPin, HIGH);
   // delayMicroseconds(10);
   // digitalWrite(trigPin, LOW);
   // long duration = pulseIn(echoPin, HIGH);
-  // float distance = duration * 0.034 / 2;
-  // Serial.print("> Distance: ");
-  // Serial.print(distance);
-  // Serial.println(" cm");
-  // lcd.setCursor(0, 0);
-  // lcd.print("Distance:");
-  // lcd.setCursor(0, 1);
-  // lcd.print(distance);
-  // lcd.print(" cm");
-
-  // // 7.Ultrasonic OUT Pin (Proximity Detection)
-  // // lcd.clear();
+  // float distance = duration * 0.034 / 2; // Calculate distance in cm
   // int outState = digitalRead(outPin); // Read the OUT pin state
-  // Serial.print("> Ultrasonic_OUT: ");
-  // lcd.setCursor(0, 0);
-  // lcd.print("Ultrasonic_OUT:");
+  
+  // Serial.print("> ");
+  // Serial.print("Distance: ");
+  // Serial.print(distance);
+  // Serial.print(" cm, ");
+  // Serial.print("Proximity: ");
   // if (outState == HIGH) {
-  //   Serial.println("Object Detected");
-  //   lcd.setCursor(0, 1);
-  //   lcd.print("Detected");
+  //   Serial.println("Detected");
   // } else {
   //   Serial.println("No Object");
-  //   lcd.setCursor(0, 1);
+  // }
+  // lcd.setCursor(0, 0);
+  // lcd.print("Dist:");
+  // lcd.print(distance);
+  // lcd.print(" cm");
+  // lcd.setCursor(0, 1);
+  // lcd.print("Prox:");
+  // if (outState == HIGH) {
+  //   lcd.print("Detected");
+  // } else {
   //   lcd.print("NoObject");
   // }
   
