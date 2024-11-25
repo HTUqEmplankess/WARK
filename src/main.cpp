@@ -1,4 +1,4 @@
-// *WARK* : Smart Contactless Sleep Monitor
+// *WARK* : Smart Contactless Sleep Monitor : Sensor Node
 
 #include <Arduino.h>
 #include "DHT.h"
@@ -15,8 +15,8 @@ const int echoPin = 18;      // Ultrasonic Echo Pin
 const int outPin = 19;       // Ultrasonic OUT Pin (digital proximity output)
 const int relayPin = 23;     // Relay Pin for controlling 12V LED
 const int luxAnalogPin = 39; // Analog output of BH1750 (AOOR)
-const int SDA = 21;          // I2C SDA
-const int SCL = 22;          // I2C SCL
+const int i2cSDA = 21;          // I2C SDA
+const int i2cSCL = 22;          // I2C SCL
 
 // PIR
 int motionDetected = 0;
@@ -54,7 +54,7 @@ void setup() {
   dht.begin();
 
   // BH1750 Light Sensor setup (I2C)
-  Wire.begin(SDA, SCL);  // Initialize I2C on GPIO21 (SDA) and GPIO22 (SCL)
+  Wire.begin(i2cSDA, i2cSCL);  // Initialize I2C on GPIO21 (i2cSDA) and GPIO22 (i2cSCL)
   if (!lightMeter.begin()) {
     Serial.println("BH1750 initialization failed!");
     lcd.print("BH1750 Error!");
@@ -87,24 +87,24 @@ void loop() {
   // lcd.print(soundLevel);
   
 
-  // // 2. PIR Motion Sensor : TEST Pass (too weak / relay is OK)
-  // // lcd.clear();
-  // delay(pirTime);
-  // motionDetected = digitalRead(pirPin);
-  // Serial.print("> Motion: ");
-  // lcd.setCursor(0, 0);
-  // lcd.print("Motion:");
-  // if (motionDetected == LOW ) {
-  //   Serial.println("0");
-  //   lcd.setCursor(0, 1);
-  //   lcd.print("None");
-  //   digitalWrite(relayPin, LOW);  // Turn OFF relay (12V LED OFF)
-  // } else {
-  //   Serial.println("1");
-  //   lcd.setCursor(0, 1);
-  //   lcd.print("Have");
-  //   digitalWrite(relayPin, HIGH); // Turn ON relay (12V LED ON)
-  // }
+  // 2. PIR Motion Sensor : TEST Pass (too weak / relay is OK)
+  // lcd.clear();
+  delay(pirTime);
+  motionDetected = digitalRead(pirPin);
+  Serial.print("> Motion: ");
+  lcd.setCursor(0, 0);
+  lcd.print("Motion:");
+  if (motionDetected == LOW ) {
+    Serial.println("0");
+    lcd.setCursor(0, 1);
+    lcd.print("None");
+    digitalWrite(relayPin, LOW);  // Turn OFF relay (12V LED OFF)
+  } else {
+    Serial.println("1");
+    lcd.setCursor(0, 1);
+    lcd.print("Have");
+    digitalWrite(relayPin, HIGH); // Turn ON relay (12V LED ON)
+  }
 
   // // 3. DHT22 Temperature and Humidity
   // // lcd.clear();
