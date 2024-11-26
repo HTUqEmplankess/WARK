@@ -5,6 +5,7 @@
 #include <Wire.h>
 #include <BH1750.h>
 #include <LiquidCrystal_I2C.h>
+#include <NewPing.h>
 
 // Pin definitions
 const int micPin = 36;       // KY-037 Microphone (Analog)
@@ -12,7 +13,6 @@ const int pirPin = 14;       // PIR Motion Sensor (Digital)
 const int dhtPin = 15;       // DHT22 Data Pin
 const int trigPin = 5;       // Ultrasonic Trig Pin 
 const int echoPin = 18;      // Ultrasonic Echo Pin 
-const int outPin = 19;       // Ultrasonic OUT Pin (digital proximity output)
 const int relayPin = 23;     // Relay Pin for controlling 12V LED
 const int luxAnalogPin = 39; // Analog output of BH1750 (AOOR)
 const int i2cSDA = 21;          // I2C SDA
@@ -29,6 +29,9 @@ DHT dht(dhtPin, DHTTYPE);
 // BH1750 setup (I2C)
 BH1750 lightMeter;
 
+// Ultrasonic setup
+NewPing sonar (trigPin, echoPin, 450);
+
 // LCD setup
 LiquidCrystal_I2C lcd(0x27, 16, 2);  // Adjust address if needed
 
@@ -43,7 +46,9 @@ void setup() {
   pinMode(pirPin, INPUT);
 
   // Ultrasonic OUT Pin setup
-  pinMode(outPin, INPUT);
+  pinMode(echoPin, INPUT);
+  pinMode(trigPin, OUTPUT);
+
 
   // Relay setup
   pinMode(relayPin, OUTPUT);
@@ -147,37 +152,19 @@ void loop() {
   // lcd.print("LightA:");
   // lcd.print(luxAnalog);
 
-  // 5. Ultrasonic Sensor: TEST Fail [Maybe Wrong Algo]
+  // 5. Ultrasonic Sensor: TEST Pass (2cm - 200cm - 450cm for far range the obj should be big too.)
   // lcd.clear();
-  // digitalWrite(trigPin, LOW);
-  // delayMicroseconds(2);
-  // digitalWrite(trigPin, HIGH);
-  // delayMicroseconds(10);
-  // digitalWrite(trigPin, LOW);
-  // long duration = pulseIn(echoPin, HIGH);
-  // float distance = duration * 0.034 / 2; // Calculate distance in cm
-  // int outState = digitalRead(outPin); // Read the OUT pin state
+  // float distance = sonar.ping_cm() ; // Calculate distance in cm
   
   // Serial.print("> ");
   // Serial.print("Distance: ");
   // Serial.print(distance);
-  // Serial.print(" cm, ");
-  // Serial.print("Proximity: ");
-  // if (outState == HIGH) {
-  //   Serial.println("Detected");
-  // } else {
-  //   Serial.println("No Object");
-  // }
+  // Serial.println(" cm, ");
+  
   // lcd.setCursor(0, 0);
   // lcd.print("Dist:");
   // lcd.print(distance);
-  // lcd.print(" cm");
-  // lcd.setCursor(0, 1);
-  // lcd.print("Prox:");
-  // if (outState == HIGH) {
-  //   lcd.print("Detected");
-  // } else {
-  //   lcd.print("NoObject");
-  // }
+  // lcd.setCursor(12, 0);
+  // lcd.print(" cm");  
   
 }
