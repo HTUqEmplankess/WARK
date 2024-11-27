@@ -34,6 +34,18 @@ NewPing sonar (trigPin, echoPin, 450);
 // LCD setup
 LiquidCrystal_I2C lcd(0x27, 16, 2);  // Adjust address if needed
 
+void changeMo(){
+  delay(2000);
+  Serial.println("NEXT >>>>>>>>>>>>>>>>>"); 
+  Serial.println("NEXT >>>>>>>>>>>>>>>>>");
+  Serial.println("NEXT >>>>>>>>>>>>>>>>>");
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("<<<<  NEXT  >>>>");
+  delay(2000);
+  lcd.clear();
+}
+
 void setup() {
   // Serial monitor
   Serial.begin(115200);
@@ -92,82 +104,124 @@ void loop() {
   // lcd.print("Sound_Level:");
   // lcd.setCursor(0, 1);
   // lcd.print(soundLevel);
-  
 
-  // // 2. PIR Motion Sensor : TEST Pass (too weak / relay is OK)
-  // // lcd.clear();
-  // delay(pirTime);
-  // motionDetected = digitalRead(pirPin);
-  // Serial.print("> Motion: ");
-  // lcd.setCursor(0, 0);
-  // lcd.print("Motion:");
-  // if (motionDetected == LOW ) {
-  //   Serial.println("0");
-  //   lcd.setCursor(0, 1);
-  //   lcd.print("None");
-  //   digitalWrite(relayPin, LOW);  // Turn OFF relay (12V LED OFF)
-  // } else {
-  //   Serial.println("1");
-  //   lcd.setCursor(0, 1);
-  //   lcd.print("Have");
-  //   digitalWrite(relayPin, HIGH); // Turn ON relay (12V LED ON)
-  // }
+  changeMo();
+  // 2. PIR Motion Sensor : TEST Pass (too weak / relay is OK)
+  // lcd.clear();
+  delay(pirTime);
+  motionDetected = digitalRead(pirPin);
+  Serial.print("> Motion: ");
+  lcd.setCursor(0, 0);
+  lcd.print("Motion:");
+  if (motionDetected == LOW ) {
+    Serial.println("0");
+    lcd.setCursor(0, 1);
+    lcd.print("None");
+    digitalWrite(relayPin, LOW);  // Turn OFF relay (12V LED OFF)
+  } else {
+    Serial.println("1");
+    lcd.setCursor(0, 1);
+    lcd.print("Have");
+    digitalWrite(relayPin, HIGH); // Turn ON relay (12V LED ON)
+  }
 
-  // // 3. DHT22 Temperature and Humidity : TEST Pass
-  // // lcd.clear();
-  // float temp = dht.readTemperature();
-  // float hum = dht.readHumidity();
-  // if (isnan(temp) || isnan(hum)) {
-  //   Serial.println("Failed to read from DHT sensor!");
-  //   lcd.setCursor(0, 0);
-  //   lcd.print("DHT22 Error");
-  // } else {
-  //   Serial.print("> Temp: ");
-  //   Serial.print(temp);
-  //   Serial.print(" °C, Hum: ");
-  //   Serial.print(hum);
-  //   Serial.println(" %");
-  //   lcd.setCursor(0, 0);
-  //   lcd.print("Temp:");
-  //   lcd.print(temp);
-  //   lcd.print("C");
-  //   lcd.setCursor(0, 1);
-  //   lcd.print("Hum:");
-  //   lcd.print(hum);
-  //   lcd.print("%");
-  // }
+  changeMo();
+  // 3. DHT22 Temperature and Humidity : TEST Pass
+  // lcd.clear();
+  float temp = dht.readTemperature();
+  float hum = dht.readHumidity();
+  if (isnan(temp) || isnan(hum)) {
+    Serial.println("Failed to read from DHT sensor!");
+    lcd.setCursor(0, 0);
+    lcd.print("DHT22 Error");
+  } else {
+    Serial.print("> Temp: ");
+    Serial.print(temp);
+    Serial.print(" °C, Hum: ");
+    Serial.print(hum);
+    Serial.println(" %");
+    lcd.setCursor(0, 0);
+    lcd.print("Temp:");
+    lcd.print(temp);
+    lcd.print("C");
+    lcd.setCursor(0, 1);
+    lcd.print("Hum:");
+    lcd.print(hum);
+    lcd.print("%");
+  }
 
-  // // 4. BH1750 Light Sensor : TEST Pass (PLS Carefull with the PCB)
-  // float lux = lightMeter.readLightLevel();  // Read light level in lux
-  // if (lux == BH1750_ERROR) {
-  //   Serial.println("> LightC: ERROR");
-  //   lcd.setCursor(0, 0);
-  //   lcd.print("LightC: ERROR   "); // Clear any previous data
-  // } else {
-  //   Serial.print("> LightC: ");
-  //   Serial.print(lux);
-  //   Serial.println(" lx");
+  changeMo();
+  // 4. BH1750 Light Sensor : TEST Pass (PLS Carefull with the PCB)
+  float lux = lightMeter.readLightLevel();  // Read light level in lux
+  if (lux == BH1750_ERROR) {
+    Serial.println("> LightC: ERROR");
+    lcd.setCursor(0, 0);
+    lcd.print("LightC: ERROR   "); // Clear any previous data
+  } else {
+    Serial.print("> LightC: ");
+    Serial.print(lux);
+    Serial.println(" lx");
 
-  //   lcd.setCursor(0, 0);
-  //   lcd.print("LightC:");
-  //   lcd.print(lux, 2); // Display with two decimal places
-  //   lcd.setCursor(14, 0);
-  //   lcd.print("lx");
-  // }
+    lcd.setCursor(0, 0);
+    lcd.print("LightC:");
+    lcd.print(lux, 2); // Display with two decimal places
+    lcd.setCursor(14, 0);
+    lcd.print("lx");
+  }
+
+  changeMo();
+  // 5. Ultrasonic Sensor: TEST Pass (2cm - 200cm - 450cm for far range the obj should be big too.)
+  // lcd.clear();
+  float distance = sonar.ping_cm() ; // Calculate distance in cm
   
-  // // 5. Ultrasonic Sensor: TEST Pass (2cm - 200cm - 450cm for far range the obj should be big too.)
-  // // lcd.clear();
-  // float distance = sonar.ping_cm() ; // Calculate distance in cm
+  Serial.print("> ");
+  Serial.print("Distance: ");
+  Serial.print(distance);
+  Serial.println(" cm, ");
   
-  // Serial.print("> ");
-  // Serial.print("Distance: ");
-  // Serial.print(distance);
-  // Serial.println(" cm, ");
-  
-  // lcd.setCursor(0, 0);
-  // lcd.print("Dist:");
-  // lcd.print(distance);
-  // lcd.setCursor(12, 0);
-  // lcd.print(" cm");  
+  lcd.setCursor(0, 0);
+  lcd.print("Dist:");
+  lcd.print(distance);
+  lcd.setCursor(12, 0);
+  lcd.print(" cm");  
   
 }
+
+
+// /// I2C Scanner
+// #include <Arduino.h>
+// #include <Wire.h>
+
+// void setup() {
+//   Serial.begin(115200);
+//   Wire.begin(21, 22); // SDA = GPIO21, SCL = GPIO22
+//   Serial.println("\nI2C Scanner: Scanning for devices...");
+// }
+
+// void loop() {
+//   byte error, address;
+//   int nDevices = 0;
+
+//   for (address = 1; address < 127; address++) {
+//     Wire.beginTransmission(address);
+//     error = Wire.endTransmission();
+
+//     if (error == 0) {
+//       Serial.print("I2C device found at address 0x");
+//       if (address < 16) Serial.print("0");
+//       Serial.println(address, HEX);
+//       nDevices++;
+//     } else if (error == 4) {
+//       Serial.print("Unknown error at address 0x");
+//       if (address < 16) Serial.print("0");
+//       Serial.println(address, HEX);
+//     }
+//   }
+
+//   if (nDevices == 0)
+//     Serial.println("No I2C devices found.");
+//   else
+//     Serial.println("Done.");
+
+//   delay(5000);
+// }
