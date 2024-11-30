@@ -8,7 +8,6 @@
 #include <NewPing.h>
 
 // Pin definitions
-const int micPin = 36;       // KY-037 Microphone (Analog)
 const int pirPin = 14;       // PIR Motion Sensor (Digital)
 const int dhtPin = 15;       // DHT22 Data Pin
 const int trigPin = 5;       // Ultrasonic Trig Pin 
@@ -83,17 +82,6 @@ void setup() {
 
 void loop() {
   
-  // // 1. KY-037 : TEST Pass (too weak / LCD is OK)
-  // //  lcd.clear(); // Clear the LCD for the next message
-  // int soundLevel = analogRead(micPin);
-  // Serial.print("> Sound_Level: ");
-  // Serial.println(soundLevel);
-  // lcd.setCursor(0, 0);
-  // lcd.print("Sound_Level:");
-  // lcd.setCursor(0, 1);
-  // lcd.print(soundLevel);
-  
-
   // // 2. PIR Motion Sensor : TEST Pass (too weak / relay is OK)
   // // lcd.clear();
   // delay(pirTime);
