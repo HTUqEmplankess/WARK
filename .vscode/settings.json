@@ -1,3 +1,6 @@
 {
-	"cmake.sourceDirectory": "C:/Users/Public/Documents/My/Embeded/WARK2/src"
+	"cmake.sourceDirectory": "C:/Users/Public/Documents/My/Embeded/WARK2/src",
+	"files.associations": {
+		"cmath": "cpp"
+	}
 }

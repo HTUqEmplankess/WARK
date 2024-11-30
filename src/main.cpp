@@ -6,6 +6,10 @@
 #include <BH1750FVI.h>
 #include <LiquidCrystal_I2C.h>
 #include <NewPing.h>
+#include <ArduinoJson.h>
+
+#define RXD 16 // Receiver UART2
+#define TXD 17 // Transmitter UART2
 
 // Pin definitions
 const int pirPin = 14;   // PIR Motion Sensor (Digital)
@@ -37,6 +41,9 @@ void setup()
 {
   // Serial monitor
   Serial.begin(115200);
+
+  // UART2
+  Serial2.begin(9600, SERIAL_8N1, RXD, TXD);
 
   // PIR Motion Sensor setup
   pinMode(pirPin, INPUT);
@@ -77,80 +84,65 @@ void setup()
 
 void loop()
 {
+  // Collect JsonData
+  StaticJsonDocument<256> jsonData;
 
-  // // 2. PIR Motion Sensor : TEST Pass (too weak / relay is OK)
-  // // lcd.clear();
-  // delay(pirTime);
-  // motionDetected = digitalRead(pirPin);
-  // Serial.print("> Motion: ");
-  // lcd.setCursor(0, 0);
-  // lcd.print("Motion:");
-  // if (motionDetected == LOW ) {
-  //   Serial.println("0");
-  //   lcd.setCursor(0, 1);
-  //   lcd.print("None");
-  // } else {
-  //   Serial.println("1");
-  //   lcd.setCursor(0, 1);
-  //   lcd.print("Have");
-  // }
+  // 3. DHT22 Temperature and Humidity : TEST Pass
+  delay(pirTime);
+  lcd.clear();
+  float temp = dht.readTemperature();
+  float hum = dht.readHumidity();
+  if (isnan(temp) || isnan(hum))
+  {
+    jsonData["Temperature"] = isnan(temp) ? NULL : temp;
+    jsonData["Humidity"] = isnan(hum) ? NULL : hum;
+    Serial.println("Failed to read from DHT sensor!");
+    lcd.setCursor(0, 0);
+    lcd.print("DHT22 Error");
+  }
+  else
+  {
+    jsonData["Temperature"] = temp;
+    jsonData["Humidity"] = hum;
+    Serial.print("> Temp: ");
+    Serial.print(temp);
+    Serial.print(" °C, Hum: ");
+    Serial.print(hum);
+    Serial.println(" %");
+    lcd.setCursor(0, 0);
+    lcd.print("Temp:");
+    lcd.print(temp);
+    lcd.print("C");
+    lcd.setCursor(0, 1);
+    lcd.print("Hum:");
+    lcd.print(hum);
+    lcd.print("%");
+  }
 
-  // // 3. DHT22 Temperature and Humidity : TEST Pass
-  // // lcd.clear();
-  // float temp = dht.readTemperature();
-  // float hum = dht.readHumidity();
-  // if (isnan(temp) || isnan(hum)) {
-  //   Serial.println("Failed to read from DHT sensor!");
-  //   lcd.setCursor(0, 0);
-  //   lcd.print("DHT22 Error");
-  // } else {
-  //   Serial.print("> Temp: ");
-  //   Serial.print(temp);
-  //   Serial.print(" °C, Hum: ");
-  //   Serial.print(hum);
-  //   Serial.println(" %");
-  //   lcd.setCursor(0, 0);
-  //   lcd.print("Temp:");
-  //   lcd.print(temp);
-  //   lcd.print("C");
-  //   lcd.setCursor(0, 1);
-  //   lcd.print("Hum:");
-  //   lcd.print(hum);
-  //   lcd.print("%");
-  // }
+  // 4. BH1750 Light Sensor : TEST Pass (PLS Carefull with the PCB)
+  delay(pirTime);
+  lcd.clear();
+  float lux = lightMeter.readLightLevel(); // Read light level in lux
+  if (lux == BH1750_ERROR)
+  {
+    jsonData["lux"] = NULL;
+    Serial.println("> LightC: ERROR");
+    lcd.setCursor(0, 0);
+    lcd.print("LightC: ERROR   "); // Clear any previous data
+  }
+  else
+  {
+    jsonData["lux"] = lux;
+    Serial.print("> LightC: ");
+    Serial.print(lux);
+    Serial.println(" lx");
 
-  // // 4. BH1750 Light Sensor : TEST Pass (PLS Carefull with the PCB)
-  // float lux = lightMeter.readLightLevel();  // Read light level in lux
-  // if (lux == BH1750_ERROR) {
-  //   Serial.println("> LightC: ERROR");
-  //   lcd.setCursor(0, 0);
-  //   lcd.print("LightC: ERROR   "); // Clear any previous data
-  // } else {
-  //   Serial.print("> LightC: ");
-  //   Serial.print(lux);
-  //   Serial.println(" lx");
-
-  //   lcd.setCursor(0, 0);
-  //   lcd.print("LightC:");
-  //   lcd.print(lux, 2); // Display with two decimal places
-  //   lcd.setCursor(14, 0);
-  //   lcd.print("lx");
-  // }
-
-  // // 5. Ultrasonic Sensor: TEST Pass (2cm - 200cm - 450cm for far range the obj should be big too.)
-  // // lcd.clear();
-  // float distance = sonar.ping_cm() ; // Calculate distance in cm
-
-  // Serial.print("> ");
-  // Serial.print("Distance: ");
-  // Serial.print(distance);
-  // Serial.println(" cm, ");
-
-  // lcd.setCursor(0, 0);
-  // lcd.print("Dist:");
-  // lcd.print(distance);
-  // lcd.setCursor(12, 0);
-  // lcd.print(" cm");
+    lcd.setCursor(0, 0);
+    lcd.print("LightC:");
+    lcd.print(lux, 2); // Display with two decimal places
+    lcd.setCursor(14, 0);
+    lcd.print("lx");
+  }
 
   // 6. Ultrasonic and Pir Sensor: TEST Pass
   // lcd.clear();
@@ -163,41 +155,37 @@ void loop()
   Serial.print(distance);
   Serial.println(" cm, ");
 
-  lcd.setCursor(0, 0);
-  lcd.print("Dist:");
-  lcd.print(distance);
-  lcd.setCursor(12, 0);
-  lcd.print(" cm");
-
   Serial.print("> Motion: ");
-  lcd.setCursor(0, 1);
-  lcd.print("Motion:");
-  if (motionDetected == LOW)
-  {
-    Serial.println("0");
-    lcd.setCursor(8, 1);
-    lcd.print("None");
-  }
-  else
-  {
-    Serial.println("1");
-    lcd.setCursor(8, 1);
-    lcd.print("Have");
-  }
+  // if (motionDetected == LOW)
+  // {
+  //   Serial.println("0");
+  // }
+  // else
+  // {
+  //   Serial.println("1");
+  // }
 
-  delay(500);
   lcd.clear();
+  String humanDetection = "None";
 
   if (motionDetected == HIGH && ((distance > 0.0) && (distance < 200.0)))
   {
-    Serial.println("> LED : ON");
-    lcd.print("LED ON");
+    humanDetection = "Detected";
+    Serial.println("Detected");
+    lcd.print("Detected");
     digitalWrite(relayPin, HIGH); // Turn ON relay (12V LED ON)
   }
   else
   {
-    Serial.println("> LED : OFF");
-    lcd.print("LED OFF");
+    humanDetection = "None";
+    Serial.println("None-Detected");
+    lcd.print("None-Detected");
     digitalWrite(relayPin, LOW); // Turn OFF relay (12V LED OFF)
   }
+  jsonData["humanDetection"] = humanDetection;
+  String output;
+  serializeJson(jsonData, output);
+  Serial.print("> json: ");
+  Serial.print(output);
+  Serial.print("\n ------------------------------ \n");
 }
