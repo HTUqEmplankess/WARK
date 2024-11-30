@@ -105,12 +105,10 @@ void loop() {
   //   Serial.println("0");
   //   lcd.setCursor(0, 1);
   //   lcd.print("None");
-  //   digitalWrite(relayPin, LOW);  // Turn OFF relay (12V LED OFF)
   // } else {
   //   Serial.println("1");
   //   lcd.setCursor(0, 1);
   //   lcd.print("Have");
-  //   digitalWrite(relayPin, HIGH); // Turn ON relay (12V LED ON)
   // }
 
   // // 3. DHT22 Temperature and Humidity : TEST Pass
@@ -169,5 +167,49 @@ void loop() {
   // lcd.print(distance);
   // lcd.setCursor(12, 0);
   // lcd.print(" cm");  
+
+    // 6. Ultrasonic and Pir Sensor: TEST Pass 
+    // lcd.clear();
+  delay(pirTime);
+  double distance = sonar.ping_cm() ; // Calculate distance in cm
+  motionDetected = digitalRead(pirPin);
   
+  Serial.print("> ");
+  Serial.print("Distance: ");
+  Serial.print(distance);
+  Serial.println(" cm, ");
+  
+  lcd.setCursor(0, 0);
+  lcd.print("Dist:");
+  lcd.print(distance);
+  lcd.setCursor(12, 0);
+  lcd.print(" cm");  
+  
+  Serial.print("> Motion: ");
+  lcd.setCursor(0, 1);
+  lcd.print("Motion:");
+  if (motionDetected == LOW ) {
+    Serial.println("0");
+    lcd.setCursor(8, 1);
+    lcd.print("None");
+  } else {
+    Serial.println("1");
+    lcd.setCursor(8, 1);
+    lcd.print("Have");
+  }
+
+  delay(500);
+  lcd.clear();
+
+  if(motionDetected == HIGH && distance>0.0 ){
+    Serial.println("> LED : ON");
+    lcd.print("LED ON");
+    digitalWrite(relayPin, HIGH); // Turn ON relay (12V LED ON)
+  }
+  else{
+    Serial.println("> LED : OFF");
+    lcd.print("LED OFF");
+    digitalWrite(relayPin, LOW);  // Turn OFF relay (12V LED OFF)
+
+  }
 }
