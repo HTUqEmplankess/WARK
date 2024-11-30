@@ -1,0 +1,226 @@
+ets Jul 29 2019 12:21:46
+
+rst:0x1 (POWERON_RESET),boot:0x13 (SPI_FAST_FLASH_BOOT)
+configsip: 0, SPIWP:0xee
+clk_drv:0x00,q_drv:0x00,d_drv:0x00,cs0_drv:0x00,hd_drv:0x00,wp_drv:0x00
+mode:DIO, clock div:2
+load:0x3fff0030,len:7176
+load:0x40078000,len:15564
+ho 0 tail 12 room 4
+load:0x40080400,len:4
+load:0x40080404,len:3904
+entry 0x40080640
+[0;32mI (31) boot: ESP-IDF v5.3.1 2nd stage bootloader[0m
+[0;32mI (31) boot: compile time Nov 30 2024 21:44:56[0m
+[0;32mI (31) boot: Multicore bootloader[0m
+[0;32mI (35) boot: chip revision: v3.1[0m
+[0;32mI (39) boot.esp32: SPI Speed      : 40MHz[0m
+[0;32mI (44) boot.esp32: SPI Mode       : DIO[0m
+[0;32mI (48) boot.esp32: SPI Flash Size : 2MB[0m
+[0;32mI (53) boot: Enabling RNG early entropy source...[0m
+[0;32mI (58) boot: Partition Table:[0m
+[0;32mI (62) boot: ## Label            Usage          Type ST Offset   Length[0m
+[0;32mI (69) boot:  0 nvs              WiFi data        01 02 00009000 00006000[0m
+[0;32mI (77) boot:  1 phy_init         RF data          01 01 0000f000 00001000[0m
+[0;32mI (84) boot:  2 factory          factory app      00 00 00010000 00100000[0m
+[0;32mI (92) boot: End of partition table[0m
+[0;32mI (96) esp_image: segment 0: paddr=00010020 vaddr=3f400020 size=38600h (230912) map[0m
+[0;32mI (183) esp_image: segment 1: paddr=00048628 vaddr=3ffb0000 size=02404h (  9220) load[0m
+[0;32mI (187) esp_image: segment 2: paddr=0004aa34 vaddr=40080000 size=055e4h ( 21988) load[0m
+[0;32mI (198) esp_image: segment 3: paddr=00050020 vaddr=400d0020 size=2c688h (181896) map[0m
+[0;32mI (260) esp_image: segment 4: paddr=0007c6b0 vaddr=400855e4 size=07f88h ( 32648) load[0m
+[0;32mI (280) boot: Loaded app from partition at offset 0x10000[0m
+[0;32mI (280) boot: Disabling RNG early entropy source...[0m
+[0;32mI (293) cpu_start: Multicore app[0m
+[0;32mI (301) cpu_start: Pro cpu start user code[0m
+[0;32mI (301) cpu_start: cpu freq: 160000000 Hz[0m
+[0;32mI (301) app_init: Application information:[0m
+[0;32mI (304) app_init: Project name:     My_Snore[0m
+[0;32mI (309) app_init: App version:      56ebb89-dirty[0m
+[0;32mI (315) app_init: Compile time:     Nov 30 2024 21:44:20[0m
+[0;32mI (321) app_init: ELF file SHA256:  a573baf9e...[0m
+[0;32mI (326) app_init: ESP-IDF:          v5.3.1[0m
+[0;32mI (331) efuse_init: Min chip rev:     v0.0[0m
+[0;32mI (335) efuse_init: Max chip rev:     v3.99 [0m
+[0;32mI (340) efuse_init: Chip rev:         v3.1[0m
+[0;32mI (345) heap_init: Initializing. RAM available for dynamic allocation:[0m
+[0;32mI (353) heap_init: At 3FFAE6E0 len 00001920 (6 KiB): DRAM[0m
+[0;32mI (358) heap_init: At 3FFD8010 len 00007FF0 (31 KiB): DRAM[0m
+[0;32mI (365) heap_init: At 3FFE0440 len 00003AE0 (14 KiB): D/IRAM[0m
+[0;32mI (371) heap_init: At 3FFE4350 len 0001BCB0 (111 KiB): D/IRAM[0m
+[0;32mI (377) heap_init: At 4008D56C len 00012A94 (74 KiB): IRAM[0m
+[0;32mI (385) spi_flash: detected chip: generic[0m
+[0;32mI (388) spi_flash: flash io: dio[0m
+[0;33mW (392) spi_flash: Detected size(4096k) larger than the size in the binary image header(2048k). Using the size in the binary image header.[0m
+[0;32mI (406) main_task: Started on CPU0[0m
+[0;32mI (416) main_task: Calling app_main()[0m
+Heard snoring (0) @0ms
+Heard snoring (0) @480ms
+Heard snoring (0) @960ms
+Heard snoring (0) @1440ms
+Heard snoring (0) @1920ms
+Heard snoring (0) @2400ms
+Heard snoring (0) @2880ms
+Heard snoring (0) @3360ms
+Heard snoring (0) @3840ms
+Heard snoring (0) @4320ms
+Heard snoring (0) @4800ms
+Heard snoring (0) @5280ms
+Heard snoring (0) @5760ms
+Heard snoring (0) @6240ms
+Heard snoring (0) @6720ms
+Heard snoring (0) @7200ms
+Heard snoring (0) @7680ms
+Heard snoring (0) @8160ms
+Heard snoring (0) @8640ms
+Heard snoring (0) @9120ms
+Heard snoring (0) @9600ms
+Heard snoring (0) @10080ms
+Heard snoring (0) @10560ms
+Heard snoring (0) @11040ms
+Heard snoring (0) @11520ms
+Heard snoring (0) @12000ms
+Heard snoring (0) @12480ms
+Heard snoring (0) @12960ms
+Heard snoring (0) @13440ms
+Heard snoring (0) @13920ms
+Heard snoring (0) @14400ms
+Heard snoring (0) @14880ms
+Heard snoring (0) @15360ms
+Heard snoring (0) @15840ms
+Heard snoring (0) @16320ms
+Heard snoring (0) @16800ms
+Heard snoring (0) @17280ms
+Heard snoring (0) @17760ms
+Heard snoring (0) @18240ms
+Heard snoring (0) @18720ms
+Heard snoring (0) @19200ms
+Heard snoring (0) @19680ms
+Heard snoring (0) @20160ms
+Heard snoring (0) @20640ms
+Heard snoring (0) @21120ms
+Heard snoring (0) @21600ms
+Heard snoring (0) @22080ms
+Heard snoring (0) @22560ms
+Heard snoring (0) @23040ms
+Heard snoring (0) @23520ms
+Heard snoring (0) @24000ms
+Heard snoring (0) @24480ms
+Heard snoring (0) @24960ms
+Heard snoring (0) @25440ms
+Heard snoring (0) @25920ms
+Heard snoring (0) @26400ms
+Heard snoring (0) @26880ms
+Heard snoring (0) @27360ms
+Heard snoring (0) @27840ms
+Heard snoring (0) @28320ms
+Heard snoring (0) @28800ms
+Heard snoring (0) @29280ms
+Heard snoring (0) @29760ms
+Heard snoring (0) @30240ms
+Heard snoring (0) @30720ms
+Heard snoring (0) @31200ms
+Heard snoring (0) @31680ms
+Heard snoring (0) @32160ms
+Heard snoring (0) @32640ms
+Heard snoring (0) @33120ms
+Heard snoring (0) @33600ms
+Heard snoring (0) @34080ms
+Heard snoring (0) @34560ms
+Heard snoring (0) @35040ms
+Heard snoring (0) @35520ms
+Heard snoring (0) @36000ms
+Heard snoring (0) @36480ms
+Heard snoring (0) @36960ms
+Heard snoring (0) @37440ms
+Heard snoring (0) @37920ms
+Heard snoring (0) @38400ms
+Heard snoring (0) @38880ms
+Heard snoring (0) @39360ms
+Heard snoring (0) @39840ms
+Heard snoring (0) @40320ms
+Heard snoring (0) @40800ms
+Heard snoring (0) @41280ms
+Heard snoring (0) @41760ms
+Heard snoring (0) @42240ms
+Heard snoring (0) @42720ms
+Heard snoring (0) @43200ms
+Heard snoring (0) @43680ms
+Heard snoring (0) @44160ms
+Heard snoring (0) @44640ms
+Heard snoring (0) @45120ms
+Heard snoring (0) @45600ms
+Heard snoring (0) @46080ms
+Heard snoring (0) @46560ms
+Heard snoring (0) @47040ms
+Heard snoring (0) @47520ms
+Heard snoring (0) @48000ms
+Heard snoring (0) @48480ms
+Heard snoring (0) @48960ms
+Heard snoring (0) @49440ms
+Heard snoring (0) @49920ms
+Heard snoring (0) @50400ms
+Heard snoring (0) @50880ms
+Heard snoring (0) @51360ms
+Heard snoring (0) @51840ms
+Heard snoring (0) @52320ms
+Heard snoring (0) @52800ms
+Heard snoring (0) @53280ms
+Heard snoring (0) @53760ms
+Heard snoring (0) @54240ms
+Heard snoring (0) @54720ms
+Heard snoring (0) @55200ms
+Heard snoring (0) @55680ms
+Heard snoring (0) @56160ms
+Heard snoring (0) @56640ms
+Heard snoring (0) @57120ms
+Heard snoring (0) @57600ms
+Heard snoring (0) @58080ms
+Heard snoring (0) @58560ms
+Heard snoring (0) @59040ms
+Heard snoring (0) @59520ms
+Heard snoring (0) @60000ms
+Heard snoring (0) @60480ms
+Heard snoring (0) @60960ms
+Heard snoring (0) @61440ms
+Heard snoring (0) @61920ms
+Heard snoring (0) @62400ms
+Heard snoring (0) @62880ms
+Heard snoring (0) @63360ms
+Heard snoring (0) @63840ms
+Heard snoring (0) @64320ms
+Heard snoring (0) @64800ms
+Heard snoring (0) @65280ms
+Heard snoring (0) @65760ms
+Heard snoring (0) @66240ms
+Heard snoring (0) @66720ms
+Heard snoring (0) @67200ms
+Heard snoring (0) @67680ms
+Heard snoring (0) @68160ms
+Heard snoring (0) @68640ms
+Heard snoring (0) @69120ms
+Heard snoring (0) @69600ms
+Heard snoring (0) @70080ms
+Heard snoring (0) @70560ms
+Heard snoring (0) @71040ms
+Heard snoring (0) @71520ms
+Heard snoring (0) @72000ms
+Heard snoring (0) @72480ms
+Heard snoring (0) @72960ms
+Heard snoring (0) @73440ms
+Heard snoring (0) @73920ms
+Heard snoring (0) @74400ms
+Heard snoring (0) @74880ms
+Heard snoring (0) @75360ms
+Heard snoring (0) @75840ms
+Heard snoring (0) @76320ms
+Heard snoring (0) @76800ms
+Heard snoring (0) @77280ms
+Heard snoring (0) @77760ms
+Heard snoring (0) @78240ms
+Heard snoring (0) @78720ms
+Heard snoring (0) @79200ms
+Heard snoring (0) @79680ms
+Heard snoring (0) @80160ms
+Heard snoring (0) @80640ms
+Heard snoring (0
