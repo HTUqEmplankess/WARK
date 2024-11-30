@@ -3,6 +3,7 @@
 #include <WebServer.h>
 #include <ArduinoJson.h>
 #include <HTTPClient.h>
+#include <ArtronShop_LineNotify.h>
 
 #define RXD 16 // Receiver UART2
 #define TXD 17 // Transmitter UART2
@@ -10,6 +11,9 @@
 // Network Credentials
 const char *ssid = "HTUq";
 const char *password = "22_07_66";
+
+#define LINE_TOKEN "6xe7YFuAHTaJYAznKWJSmEtdHD9FGOAysoaONRVGop1" // LINE Token
+
 
 void setup()
 {
@@ -35,11 +39,13 @@ void setup()
   Serial.println("\nConnected To The WiFi Network");
   Serial.print("Local ESP32 IP: ");
   Serial.println(WiFi.localIP());
+
+  LINE.begin(LINE_TOKEN); 
 }
 
 void loop()
 {
-  // // Receive JSON from Sender
+  // Receive JSON from Node Sensor Sender
   // if (Serial2.available() > 0)
   // {
   //   String jsonString = Serial2.readStringUntil('\n');
@@ -67,12 +73,35 @@ void loop()
   //     Serial.println("ํ lux");
   //     Serial.print("humanDetection: ");
   //     Serial.println(humanDetection);
+  //     if(humanDetection=="Detected"){
+  //       LINE.send("You are awaking!");
+  //     }  
   //   }
+
+    
   // }
 
+  // Receive JSON from Node Sensor Sender
   if (Serial2.available() > 0)
   {
-    String Data = Serial2.readString();
-    Serial.println(Data);
+    String jsonString = Serial2.readStringUntil('\n');
+    StaticJsonDocument<256> jsonData;
+
+    // Deserialization to JSON
+    DeserializationError error = deserializeJson(jsonData, jsonString);
+
+    if (!error)
+    {
+      String command = jsonData["command"];
+      int score = jsonData["score"];
+      String time = jsonData["time"];
+
+      // Show Data on Serial
+      Serial.print("You are ");
+      Serial.print(command);
+      Serial.print(" score ");
+      Serial.println(score);
+      LINE.send("You are snoring!");
+    }
   }
 }
