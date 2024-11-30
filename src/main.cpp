@@ -37,9 +37,6 @@ void setup() {
   // Serial monitor
   Serial.begin(115200);
 
-  // Microphone setup
-  pinMode(micPin, INPUT);
-
   // PIR Motion Sensor setup
   pinMode(pirPin, INPUT);
 
