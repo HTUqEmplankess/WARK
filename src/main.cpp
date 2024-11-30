@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include <Wifi.h>
 #include <WebServer.h>
+#include <ArduinoJson.h>
 
 #define RXD 16 // Receiver UART2
 #define TXD 17 // Transmitter UART2
@@ -37,5 +38,10 @@ void setup()
 
 void loop()
 {
-  // put your main code here, to run repeatedly:
+  // Receive JSON from Sender
+  if (Serial2.available() > 0)
+  {
+    String input = Serial2.readString();
+    Serial.println(input);
+  }
 }
