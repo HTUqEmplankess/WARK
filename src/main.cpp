@@ -12,8 +12,42 @@
 const char *ssid = "HTUq";
 const char *password = "22_07_66";
 
-#define LINE_TOKEN "6xe7YFuAHTaJYAznKWJSmEtdHD9FGOAysoaONRVGop1" // LINE Token
+#define LINE_TOKEN "6xe7YFuAHTaJYAznKWJSmEtdHD9FGOAysoaONRVGop1" 
+#define GOOGLE_SCRIPT_URL "https://script.google.com/macros/s/AKfycbyJxgloJnvfXQhBN3G4k1gPBY7_imxUlC2YwHSquCKPJJzk9i53HVcoPNUvTVdgwEmrGA/exec"
 
+// Variable Declaration
+float temp;
+float hum;
+float lux;
+String humanDetection = "";
+
+String command = "Not Snoring";
+int score = -1;
+String timeA = "-1" ;
+
+
+void sendToGoogleSheets(float temp, float hum, float lux, String humanDetection,String snoring,int score) {
+  HTTPClient http;
+
+  // Create the URL with parameters
+  String url = String(GOOGLE_SCRIPT_URL) + "?value1=" + String(temp) +
+               "&value2=" + String(hum) +
+               "&value3=" + String(lux) +
+               "&value4=" + String(humanDetection)+
+               "&value5=" + String(snoring)+
+               "&value6=" + String(score);
+
+  http.begin(url);  // Initialize HTTP request
+  int httpCode = http.GET();  // Send GET request
+
+  if (httpCode == 200) {
+    Serial.printf("Data sent to Google Sheets. HTTP Response: %d\n", httpCode);
+  } else {
+    Serial.printf("Error sending to Google Sheets: %d : %s\n", httpCode, http.errorToString(httpCode).c_str());
+  }
+
+  http.end();  // Close connection
+}
 
 void setup()
 {
@@ -75,7 +109,8 @@ void loop()
   //     Serial.println(humanDetection);
   //     if(humanDetection=="Detected"){
   //       LINE.send("You are awaking!");
-  //     }  
+  //     }
+  // sendToGoogleSheets(temp, hum, lux, humanDetection, command, score);
   //   }
 
     
@@ -92,9 +127,9 @@ void loop()
 
     if (!error)
     {
-      String command = jsonData["command"];
-      int score = jsonData["score"];
-      String time = jsonData["time"];
+      command = jsonData["command"].as<String>();
+      score = jsonData["score"];
+      timeA = jsonData["time"].as<String>();
 
       // Show Data on Serial
       Serial.print("You are ");
@@ -103,5 +138,11 @@ void loop()
       Serial.println(score);
       LINE.send("You are snoring!");
     }
+  sendToGoogleSheets(temp, hum, lux, humanDetection, command, score);
+
+    command = "Not Snoring";
+    score = -1;
+    timeA = "-1" ;
   }
+
 }
