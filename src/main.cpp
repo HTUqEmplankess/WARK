@@ -185,7 +185,8 @@ void loop()
   jsonData["humanDetection"] = humanDetection;
   String output;
   serializeJson(jsonData, output);
-  Serial.print("> json: ");
-  Serial.print(output);
-  Serial.print("\n ------------------------------ \n");
+
+  // Send JSON to another esp32
+  Serial2.println(output);
+  Serial.println("Sented");
 }
