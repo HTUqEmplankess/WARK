@@ -94,16 +94,16 @@ void loop()
   float hum = dht.readHumidity();
   if (isnan(temp) || isnan(hum))
   {
-    jsonData["Temperature"] = isnan(temp) ? NULL : temp;
-    jsonData["Humidity"] = isnan(hum) ? NULL : hum;
+    jsonData["temperature"] = isnan(temp) ? NULL : temp;
+    jsonData["humidity"] = isnan(hum) ? NULL : hum;
     Serial.println("Failed to read from DHT sensor!");
     lcd.setCursor(0, 0);
     lcd.print("DHT22 Error");
   }
   else
   {
-    jsonData["Temperature"] = temp;
-    jsonData["Humidity"] = hum;
+    jsonData["temperature"] = temp;
+    jsonData["humidity"] = hum;
     Serial.print("> Temp: ");
     Serial.print(temp);
     Serial.print(" °C, Hum: ");
