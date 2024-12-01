@@ -22,7 +22,7 @@
 
 const int dhtPin = 15; // DHT22 Data Pin
 
-int LEDBlynk;
+int ledBlynk;
 
 // Timestamp of the last action
 unsigned long lastTimeAwake = 0;
@@ -47,9 +47,9 @@ const char *password = "22_07_66";
 #define GOOGLE_SCRIPT_URL "https://script.google.com/macros/s/AKfycbz9e3kvlAyHrM_jBuQ6PbXRxqf6YELR2A1f1_3aMNDgmSOwe79kb-hTjYt0eF3ZZs778w/exec"
 
 BLYNK_WRITE(V0){
-  LEDBlynk = param.asInt();
-  Serial.printf("{ Sent Blynk_LED:%d }\n",LEDBlynk);
-  Serial2.printf("{ Blynk_LED:%d }\n",LEDBlynk);
+  ledBlynk = param.asInt();
+  Serial.printf("{ Sent Blynk_LED:%d }\n",ledBlynk);
+  Serial2.printf("{ Blynk_LED:%d }\n",ledBlynk);
 }
 
 // Variable Declaration
