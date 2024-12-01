@@ -4,9 +4,13 @@
 #include <ArduinoJson.h>
 #include <HTTPClient.h>
 #include <ArtronShop_LineNotify.h>
+#include <LiquidCrystal_I2C.h>
+#include <Wire.h>
 
 #define RXD 16 // Receiver UART2
 #define TXD 17 // Transmitter UART2
+
+LiquidCrystal_I2C lcd(0x27,16, 2);
 
 // Network Credentials
 const char *ssid = "HTUq";
@@ -54,8 +58,17 @@ void setup()
   // Serial monitor
   Serial.begin(115200);
 
+  
+
   // UART2
   Serial2.begin(9600, SERIAL_8N1, RXD, TXD);
+
+  //LCD
+  Wire.begin(21, 22);
+  lcd.begin(16, 2); // Initialize LCD with 16 columns and 2 rows
+  lcd.backlight();
+  lcd.setCursor(0, 0);
+  lcd.print("Initializing..."); 
 
   // Wifi Station mode
   WiFi.mode(WIFI_STA);
@@ -75,6 +88,8 @@ void setup()
   Serial.println(WiFi.localIP());
 
   LINE.begin(LINE_TOKEN); 
+
+  lcd.clear();
 }
 
 void loop()
@@ -108,17 +123,19 @@ void loop()
   //     Serial.print("humanDetection: ");
   //     Serial.println(humanDetection);
   //     if(humanDetection=="Detected"){
+  //       lcd.print("Human Detect");
   //       LINE.send("You are awaking!");
   //     }
   // sendToGoogleSheets(temp, hum, lux, humanDetection, command, score);
   //   }
+  // lcd.clear();
 
-    
   // }
 
   // Receive JSON from Node Sensor Sender
   if (Serial2.available() > 0)
   {
+    lcd.print("Snoring Detect");
     String jsonString = Serial2.readStringUntil('\n');
     StaticJsonDocument<256> jsonData;
 
@@ -138,11 +155,12 @@ void loop()
       Serial.println(score);
       LINE.send("You are snoring!");
     }
-  sendToGoogleSheets(temp, hum, lux, humanDetection, command, score);
+    
+    sendToGoogleSheets(temp, hum, lux, humanDetection, command, score);
 
     command = "Not Snoring";
     score = -1;
     timeA = "-1" ;
   }
-
+  lcd.clear();
 }
