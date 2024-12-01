@@ -22,6 +22,8 @@
 
 const int dhtPin = 15; // DHT22 Data Pin
 
+int LEDBlynk;
+
 // Timestamp of the last action
 unsigned long lastTimeAwake = 0;
 const unsigned long debounceAwake = 60 * 1000; // 10 minutes in milliseconds
@@ -43,6 +45,12 @@ const char *password = "22_07_66";
 
 #define LINE_TOKEN "6xe7YFuAHTaJYAznKWJSmEtdHD9FGOAysoaONRVGop1"
 #define GOOGLE_SCRIPT_URL "https://script.google.com/macros/s/AKfycbz9e3kvlAyHrM_jBuQ6PbXRxqf6YELR2A1f1_3aMNDgmSOwe79kb-hTjYt0eF3ZZs778w/exec"
+
+BLYNK_WRITE(V0){
+  LEDBlynk = param.asInt();
+  Serial.printf("{ Sent Blynk_LED:%d }\n",LEDBlynk);
+  Serial2.printf("{ Blynk_LED:%d }\n",LEDBlynk);
+}
 
 // Variable Declaration
 float temp;
@@ -134,7 +142,7 @@ void setup()
   // Serial monitor
   Serial.begin(115200);
 
-  // Blynk.begin(BLYNK_AUTH_TOKEN, ssid, password);
+  Blynk.begin(BLYNK_AUTH_TOKEN, ssid, password);
 
   // UART2
   Serial1.begin(115200, SERIAL_8N1, RX1, TX1);
@@ -185,7 +193,7 @@ void setup()
 
 void loop()
 {
-  // Blynk.run();
+  Blynk.run();
   // 3. DHT22 Temperature and Humidity : TEST Pass
   float tempN = dht.readTemperature();
   float humN = dht.readHumidity();
