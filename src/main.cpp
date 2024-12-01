@@ -95,42 +95,64 @@ void setup()
 void loop()
 {
   // Receive JSON from Node Sensor Sender
-  // if (Serial2.available() > 0)
-  // {
-  //   String jsonString = Serial2.readStringUntil('\n');
-  //   StaticJsonDocument<256> jsonData;
+  if (Serial2.available() > 0)
+  {
+    int ch = 0;
+    String jsonString = Serial2.readStringUntil('\n');
+    StaticJsonDocument<256> jsonData;
 
-  //   // Deserialization to JSON
-  //   DeserializationError error = deserializeJson(jsonData, jsonString);
+    // Deserialization to JSON
+    DeserializationError error = deserializeJson(jsonData, jsonString);
 
-  //   if (!error)
-  //   {
-  //     float temp = jsonData["temperature"];
-  //     float hum = jsonData["humidity"];
-  //     float lux = jsonData["lux"];
-  //     String humanDetection = jsonData["humanDetection"];
+    if (!error)
+    {
+      float tempN = jsonData["temperature"];
+      float humN = jsonData["humidity"];
+      float luxN = jsonData["lux"];
+      String humanDetectionN = jsonData["humanDetection"];
 
-  //     // Show Data on Serial
-  //     Serial.print("Temperature: ");
-  //     Serial.print(temp);
-  //     Serial.println("ํ °C");
-  //     Serial.print("Humidity: ");
-  //     Serial.print(hum);
-  //     Serial.println("ํ %");
-  //     Serial.print("Light: ");
-  //     Serial.print(lux);
-  //     Serial.println("ํ lux");
-  //     Serial.print("humanDetection: ");
-  //     Serial.println(humanDetection);
-  //     if(humanDetection=="Detected"){
-  //       lcd.print("Human Detect");
-  //       LINE.send("You are awaking!");
-  //     }
-  // sendToGoogleSheets(temp, hum, lux, humanDetection, command, score);
-  //   }
-  // lcd.clear();
+      // Show Data on Serial
+      Serial.print("Temperature: ");
+      Serial.print(tempN);
+      Serial.println("ํ °C");
+      Serial.print("Humidity: ");
+      Serial.print(humN);
+      Serial.println("ํ %");
+      Serial.print("Light: ");
+      Serial.print(luxN);
+      Serial.println("ํ lux");
+      Serial.print("humanDetection: ");
+      Serial.println(humanDetectionN);
+      if(humanDetectionN=="Detected"){
+        lcd.print("Human Detect");
+        LINE.send("You are awaking!");
+      }
 
-  // }
+      if(tempN!=temp){
+        temp = tempN;
+        ch = 1;
+      }
+      if(humN!=hum){
+        hum = humN;
+        ch = 1;
+      }
+      if(luxN!=lux){
+        lux = luxN;
+        ch = 1;
+      }
+      if(humanDetectionN!=humanDetection){
+        humanDetection = humanDetectionN;
+        ch = 1;
+      }
+
+      if(ch){
+        sendToGoogleSheets(temp, hum, lux, humanDetection, command, score);
+      }
+      
+    }
+  lcd.clear();
+
+  }
 
   // Receive JSON from Node Sensor Sender
   if (Serial2.available() > 0)
