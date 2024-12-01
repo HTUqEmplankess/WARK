@@ -12,13 +12,30 @@
 #include <LiquidCrystal_I2C.h>
 #include <Wire.h>
 #include <BlynkSimpleEsp32.h>
+#include "DHT.h"
+#include <BH1750FVI.h>
 
 #define RX1 18 // Receiver UART1
 #define TX1 19 // Transmitter UART1
 #define RX2 16 // Receiver UART2
 #define TX2 17 // Transmitter UART2
 
+const int dhtPin = 15; // DHT22 Data Pin
+
+// Timestamp of the last action
+unsigned long lastTimeAwake = 0;
+const unsigned long debounceAwake = 60 * 1000; // 10 minutes in milliseconds
+unsigned long lastTimeSnore = 0;
+const unsigned long debounceSnore = 60 * 1000; // 10 minutes in milliseconds
+
+// DHT22 setup
+#define DHTTYPE DHT22
+DHT dht(dhtPin, DHTTYPE);
+
 LiquidCrystal_I2C lcd(0x27, 16, 2);
+
+// BH1750 setup (I2C)
+BH1750FVI lightMeter(BH1750_DEFAULT_I2CADDR, BH1750_ONE_TIME_HIGH_RES_MODE, BH1750_SENSITIVITY_DEFAULT, BH1750_ACCURACY_DEFAULT);
 
 // Network Credentials
 const char *ssid = "HTUq";
@@ -73,6 +90,45 @@ void sendToCloud(float temp, float hum, float lux, String humanDetection, String
   Blynk.virtualWrite(V5, lux);
 }
 
+void updateLCD(float temp, float hum, float lux, String humanDetection)
+{
+  static float lastTemp = -1;
+  static float lastHum = -1;
+  static float lastLux = -1;
+  static String lastHumanDetection = "";
+
+  if (temp != lastTemp || hum != lastHum)
+  {
+    lcd.clear();
+    lcd.setCursor(0, 0);
+    lcd.print("Temp: ");
+    lcd.print(temp);
+    lcd.print(" C");
+    lcd.setCursor(0, 1);
+    lcd.print("Hum: ");
+    lcd.print(hum);
+    lcd.print(" %");
+    lastTemp = temp;
+    lastHum = hum;
+    delay(1000);
+  }
+
+  if (lux != lastLux || humanDetection != lastHumanDetection)
+  {
+    lcd.clear();
+    lcd.setCursor(0, 0);
+    lcd.print("Lux: ");
+    lcd.print(lux);
+    lcd.print(" lx");
+    lcd.setCursor(0, 1);
+    lcd.print("Human: ");
+    lcd.print(humanDetection);
+    lastLux = lux;
+    lastHumanDetection = humanDetection;
+    delay(1000);
+  }
+}
+
 void setup()
 {
   // Serial monitor
@@ -83,6 +139,20 @@ void setup()
   // UART2
   Serial1.begin(115200, SERIAL_8N1, RX1, TX1);
   Serial2.begin(9600, SERIAL_8N1, RX2, TX2);
+
+  // DHT22 setup
+  dht.begin();
+
+  // BH1750 Light Sensor setup (I2C)
+  if (!lightMeter.begin())
+  {
+    Serial.println("BH1750 initialization failed!");
+    lcd.print("BH1750 Error!");
+  }
+  /* change BH1750 settings on the fly */
+  lightMeter.setCalibration(1.06);                           // call before "readLightLevel()", 1.06=white LED & artifical sun
+  lightMeter.setSensitivity(1.00);                           // call before "readLightLevel()", 1.00=no optical filter in front of the sensor
+  lightMeter.setResolution(BH1750_CONTINUOUS_HIGH_RES_MODE); // call before "readLightLevel()", continuous measurement with 1.00 lux resolution
 
   // LCD
   Wire.begin(21, 22);
@@ -116,6 +186,17 @@ void setup()
 void loop()
 {
   // Blynk.run();
+  // 3. DHT22 Temperature and Humidity : TEST Pass
+  float temp = dht.readTemperature();
+  float hum = dht.readHumidity();
+  float lux = lightMeter.readLightLevel(); // Read light level in lux
+  if (lux == BH1750_ERROR)
+  {
+    Serial.println("> LightC: ERROR");
+    lcd.setCursor(0, 0);
+    lcd.print("LightC: ERROR   "); // Clear any previous data
+  }
+
   // Receive JSON from Node Sensor Sender
   if (Serial2.available() > 0)
   {
@@ -128,9 +209,9 @@ void loop()
 
     if (!error)
     {
-      float tempN = jsonData["temperature"];
-      float humN = jsonData["humidity"];
-      float luxN = jsonData["lux"];
+      float tempN = temp;
+      float humN = hum;
+      float luxN = lux;
       String humanDetectionN = jsonData["humanDetection"];
 
       // Show Data on Serial
@@ -166,27 +247,32 @@ void loop()
         humanDetection = humanDetectionN;
         ch = 1;
       }
-      delay(500);
-      lcd.clear();
-      lcd.setCursor(0, 0);
-      lcd.print("Temp :");
-      lcd.print(tempN);
-      lcd.print(" C");
-      lcd.setCursor(0, 1);
-      lcd.print("Hum :");
-      lcd.print(humN);
-      lcd.print(" %");
-      delay(500);
-      lcd.clear();
-      lcd.setCursor(0, 0);
-      lcd.print("Lux :");
-      lcd.print(luxN);
-      lcd.print(" lx");
-      lcd.setCursor(0, 1);
+      // lcd.clear();
+      // lcd.setCursor(0, 0);
+      // lcd.print("Temp :");
+      // lcd.print(tempN);
+      // lcd.print(" C");
+      // lcd.setCursor(0, 1);
+      // lcd.print("Hum :");
+      // lcd.print(humN);
+      // lcd.print(" %");
+      // delay(1000);
+      // lcd.clear();
+      // lcd.setCursor(0, 0);
+      // lcd.print("Lux :");
+      // lcd.print(luxN);
+      // lcd.print(" lx");
+      // lcd.setCursor(0, 1);
+      updateLCD(temp, hum, lux, humanDetectionN);
       if (humanDetectionN == "Detected")
       {
-        lcd.print("Human Detect");
-        LINE.send("You are awaking!");
+        // debounce line
+        unsigned long currentTime = millis(); // Get the current time in milliseconds
+        if (currentTime - lastTimeAwake >= debounceAwake)
+        {
+          LINE.send("You are awaking!");
+          lastTimeAwake = currentTime; // Update the last action time
+        }
       }
 
       if (ch)
@@ -218,14 +304,20 @@ void loop()
       Serial.print(command);
       Serial.print(" score ");
       Serial.println(score);
-      LINE.send("You are snoring!");
+
+      // debounce line
+      unsigned long currentTime = millis();
+      if (currentTime - lastTimeSnore >= debounceSnore)
+      {
+        LINE.send("You are snoring!");
+        lastTimeSnore = currentTime; // Update the last action time
+      }
     }
 
     sendToCloud(temp, hum, lux, humanDetection, command, score);
 
-    command = "Not_Snoring";
+    command = "not_snoring";
     score = -1;
     timeA = "-1";
   }
-  lcd.clear();
 }
