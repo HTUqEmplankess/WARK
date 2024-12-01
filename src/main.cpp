@@ -1,3 +1,8 @@
+#define BLYNK_TEMPLATE_ID "TMPL6YgbGJxbo"
+#define BLYNK_TEMPLATE_NAME "Sleep Monitor"
+#define BLYNK_AUTH_TOKEN "vOFeGSR9qI3YG1k9KbTS2wjfJgCB42BQ"
+#define BLYNK_PRINT Serial
+
 #include <Arduino.h>
 #include <Wifi.h>
 #include <WebServer.h>
@@ -6,6 +11,7 @@
 #include <ArtronShop_LineNotify.h>
 #include <LiquidCrystal_I2C.h>
 #include <Wire.h>
+#include <BlynkSimpleEsp32.h>
 
 #define RXD 16 // Receiver UART2
 #define TXD 17 // Transmitter UART2
@@ -19,6 +25,7 @@ const char *password = "22_07_66";
 #define LINE_TOKEN "6xe7YFuAHTaJYAznKWJSmEtdHD9FGOAysoaONRVGop1" 
 #define GOOGLE_SCRIPT_URL "https://script.google.com/macros/s/AKfycbyJxgloJnvfXQhBN3G4k1gPBY7_imxUlC2YwHSquCKPJJzk9i53HVcoPNUvTVdgwEmrGA/exec"
 
+
 // Variable Declaration
 float temp;
 float hum;
@@ -29,8 +36,8 @@ String command = "Not Snoring";
 int score = -1;
 String timeA = "-1" ;
 
-
-void sendToGoogleSheets(float temp, float hum, float lux, String humanDetection,String snoring,int score) {
+void sendToCloud(float temp, float hum, float lux, String humanDetection,String snoring,int score) {
+  // Google Sheet Part
   HTTPClient http;
 
   // Create the URL with parameters
@@ -51,6 +58,14 @@ void sendToGoogleSheets(float temp, float hum, float lux, String humanDetection,
   }
 
   http.end();  // Close connection
+
+  //Blynk Part
+  Blynk.virtualWrite(V1, snoring);
+  Blynk.virtualWrite(V2, humanDetection);
+  Blynk.virtualWrite(V3, temp);
+  Blynk.virtualWrite(V4, hum);
+  Blynk.virtualWrite(V5, lux);
+
 }
 
 void setup()
@@ -146,9 +161,9 @@ void loop()
       }
 
       if(ch){
-        sendToGoogleSheets(temp, hum, lux, humanDetection, command, score);
+        sendToCloud(temp, hum, lux, humanDetection, command, score);
       }
-      
+
     }
   lcd.clear();
 
@@ -178,7 +193,7 @@ void loop()
       LINE.send("You are snoring!");
     }
     
-    sendToGoogleSheets(temp, hum, lux, humanDetection, command, score);
+    sendToCloud(temp, hum, lux, humanDetection, command, score);
 
     command = "Not Snoring";
     score = -1;
