@@ -187,10 +187,10 @@ void loop()
 {
   // Blynk.run();
   // 3. DHT22 Temperature and Humidity : TEST Pass
-  float temp = dht.readTemperature();
-  float hum = dht.readHumidity();
-  float lux = lightMeter.readLightLevel(); // Read light level in lux
-  if (lux == BH1750_ERROR)
+  float tempN = dht.readTemperature();
+  float humN = dht.readHumidity();
+  float luxN = lightMeter.readLightLevel(); // Read light level in lux
+  if (luxN == BH1750_ERROR)
   {
     Serial.println("> LightC: ERROR");
     lcd.setCursor(0, 0);
@@ -209,9 +209,6 @@ void loop()
 
     if (!error)
     {
-      float tempN = temp;
-      float humN = hum;
-      float luxN = lux;
       String humanDetectionN = jsonData["humanDetection"];
 
       // Show Data on Serial
@@ -247,22 +244,7 @@ void loop()
         humanDetection = humanDetectionN;
         ch = 1;
       }
-      // lcd.clear();
-      // lcd.setCursor(0, 0);
-      // lcd.print("Temp :");
-      // lcd.print(tempN);
-      // lcd.print(" C");
-      // lcd.setCursor(0, 1);
-      // lcd.print("Hum :");
-      // lcd.print(humN);
-      // lcd.print(" %");
-      // delay(1000);
-      // lcd.clear();
-      // lcd.setCursor(0, 0);
-      // lcd.print("Lux :");
-      // lcd.print(luxN);
-      // lcd.print(" lx");
-      // lcd.setCursor(0, 1);
+      
       updateLCD(temp, hum, lux, humanDetectionN);
       if (humanDetectionN == "Detected")
       {
