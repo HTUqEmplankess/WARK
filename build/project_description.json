@@ -1,7 +1,7 @@
 {
     "version":            "1.1",
     "project_name":       "My_Snore",
-    "project_version":    "885fd12-dirty",
+    "project_version":    "2f9f048-dirty",
     "project_path":       "C:/Users/Public/Documents/My/Embeded/INMP441/My_Snore",
     "idf_path":           "C:/Users/LENOVO/esp/v5.3.1/esp-idf",
     "build_dir":          "C:/Users/Public/Documents/My/Embeded/INMP441/My_Snore/build",
