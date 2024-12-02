@@ -22,13 +22,14 @@
 
 const int dhtPin = 15; // DHT22 Data Pin
 
-int ledBlynk;
+int ledBlynk = 0;
+int ledMode = 1;
 
 // Timestamp of the last action
 unsigned long lastTimeAwake = 0;
-const unsigned long debounceAwake = 60 * 1000; // 10 minutes in milliseconds
+const unsigned long debounceAwake = 60 * 1000; // 1 minutes in milliseconds
 unsigned long lastTimeSnore = 0;
-const unsigned long debounceSnore = 60 * 1000; // 10 minutes in milliseconds
+const unsigned long debounceSnore = 60 * 1000; // 1 minutes in milliseconds
 
 // DHT22 setup
 #define DHTTYPE DHT22
@@ -46,10 +47,17 @@ const char *password = "22_07_66";
 #define LINE_TOKEN "6xe7YFuAHTaJYAznKWJSmEtdHD9FGOAysoaONRVGop1"
 #define GOOGLE_SCRIPT_URL "https://script.google.com/macros/s/AKfycbz9e3kvlAyHrM_jBuQ6PbXRxqf6YELR2A1f1_3aMNDgmSOwe79kb-hTjYt0eF3ZZs778w/exec"
 
-BLYNK_WRITE(V0){
+BLYNK_WRITE(V0)
+{
   ledBlynk = param.asInt();
-  Serial.printf("{ Sent Blynk_LED:%d }\n",ledBlynk);
-  Serial2.printf("{ Blynk_LED:%d }\n",ledBlynk);
+  Serial.printf("{ Sent Blynk_LED:%d }\n", ledBlynk);
+  Serial2.printf("{  Blynk_MODE:%d , Blynk_LED:%d }\n", ledMode, ledBlynk);
+}
+BLYNK_WRITE(V6)
+{
+  ledMode = param.asInt();
+  Serial.printf("{ Sent MODE:%d }\n", ledMode);
+  Serial2.printf("{  Blynk_MODE:%d , Blynk_LED:%d }\n", ledMode, ledBlynk);
 }
 
 // Variable Declaration
@@ -146,7 +154,7 @@ void setup()
 
   // UART2
   Serial1.begin(115200, SERIAL_8N1, RX1, TX1);
-  Serial2.begin(9600, SERIAL_8N1, RX2, TX2);
+  Serial2.begin(115200, SERIAL_8N1, RX2, TX2);
 
   // DHT22 setup
   dht.begin();
@@ -208,7 +216,6 @@ void loop()
   // Receive JSON from Node Sensor Sender
   if (Serial2.available() > 0)
   {
-    int ch = 0;
     String jsonString = Serial2.readStringUntil('\n');
     StaticJsonDocument<256> jsonData;
 
@@ -235,27 +242,23 @@ void loop()
       if (tempN != temp)
       {
         temp = tempN;
-        ch = 1;
       }
       if (humN != hum)
       {
         hum = humN;
-        ch = 1;
       }
       if (luxN != lux)
       {
         lux = luxN;
-        ch = 1;
       }
       if (humanDetectionN != humanDetection)
       {
         humanDetection = humanDetectionN;
-        ch = 1;
       }
-      
-      updateLCD(temp, hum, lux, humanDetectionN);
+
       if (humanDetectionN == "Detected")
       {
+        sendToCloud(temp, hum, lux, humanDetection, command, score);
         // debounce line
         unsigned long currentTime = millis(); // Get the current time in milliseconds
         if (currentTime - lastTimeAwake >= debounceAwake)
@@ -265,10 +268,7 @@ void loop()
         }
       }
 
-      if (ch)
-      {
-        sendToCloud(temp, hum, lux, humanDetection, command, score);
-      }
+      updateLCD(temp, hum, lux, humanDetectionN);
     }
     lcd.clear();
   }
@@ -295,6 +295,8 @@ void loop()
       Serial.print(" score ");
       Serial.println(score);
 
+      sendToCloud(temp, hum, lux, humanDetection, command, score);
+
       // debounce line
       unsigned long currentTime = millis();
       if (currentTime - lastTimeSnore >= debounceSnore)
@@ -303,8 +305,6 @@ void loop()
         lastTimeSnore = currentTime; // Update the last action time
       }
     }
-
-    sendToCloud(temp, hum, lux, humanDetection, command, score);
 
     command = "not_snoring";
     score = -1;
