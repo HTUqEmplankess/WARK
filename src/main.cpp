@@ -14,6 +14,10 @@ const int trigPin = 5;   // Ultrasonic Trig Pin
 const int echoPin = 18;  // Ultrasonic Echo Pin
 const int relayPin = 23; // Relay Pin for controlling 12V LED
 
+// LED
+int blynk_mode = 1;
+int blynk_led = 0;
+
 // PIR
 int motionDetected = 0;
 const int pirTime = 1000;
@@ -27,7 +31,7 @@ void setup()
   Serial.begin(115200);
 
   // UART2
-  Serial2.begin(9600, SERIAL_8N1, RXD, TXD);
+  Serial2.begin(115200, SERIAL_8N1, RXD, TXD);
 
   // PIR Motion Sensor setup
   pinMode(pirPin, INPUT);
@@ -50,6 +54,7 @@ void loop()
 {
   // Collect JsonData
   StaticJsonDocument<256> jsonData;
+  StaticJsonDocument<256> ledJsonData;
 
   // 6. Ultrasonic and Pir Sensor: TEST Pass
   // lcd.clear();
@@ -63,33 +68,57 @@ void loop()
   Serial.println(" cm, ");
 
   Serial.print("> Motion: ");
-  // if (motionDetected == LOW)
-  // {
-  //   Serial.println("0");
-  // }
-  // else
-  // {
-  //   Serial.println("1");
-  // }
 
   String humanDetection = "None";
 
-  if (motionDetected == HIGH && ((distance > 0.0) && (distance < 200.0)))
+  if (Serial2.available() > 0)
   {
-    humanDetection = "Detected";
-    Serial.println("Detected");
-    digitalWrite(relayPin, HIGH); // Turn ON relay (12V LED ON)
+    String stringData = Serial2.readString();
+
+    Serial.println(stringData);
+
+    // Deserialization to JSON
+    DeserializationError error = deserializeJson(ledJsonData, stringData);
+    blynk_mode = ledJsonData["Blynk_Mode"];
+    blynk_led = ledJsonData["Blynk_LED"];
+  }
+
+  if (blynk_mode == 1)
+  {
+    // Auto Detect
+    if (motionDetected == HIGH && ((distance > 0.0) && (distance < 200.0)))
+    {
+      humanDetection = "Detected";
+      Serial.println("Detected");
+      digitalWrite(relayPin, HIGH); // Turn ON relay (12V LED ON)
+    }
+    else
+    {
+      humanDetection = "None";
+      Serial.println("None-Detected");
+      digitalWrite(relayPin, LOW); // Turn OFF relay (12V LED OFF)
+    }
   }
   else
   {
-    humanDetection = "None";
-    Serial.println("None-Detected");
-    digitalWrite(relayPin, LOW); // Turn OFF relay (12V LED OFF)
+    // Manual
+    if (blynk_led == 1)
+    {
+      humanDetection = "Detected";
+      Serial.println("Detected");
+      digitalWrite(relayPin, HIGH); // Turn ON relay (12V LED ON)
+    }
+    else
+    {
+      humanDetection = "None";
+      Serial.println("None-Detected");
+      digitalWrite(relayPin, LOW); // Turn OFF relay (12V LED OFF)
+    }
   }
+
   jsonData["humanDetection"] = humanDetection;
   String output;
   serializeJson(jsonData, output);
-
   // Send JSON to another esp32
   Serial2.println(output);
   Serial.println("Sented");
