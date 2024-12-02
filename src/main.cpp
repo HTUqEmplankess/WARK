@@ -67,7 +67,7 @@ void loop()
   Serial.print(distance);
   Serial.println(" cm, ");
 
-  Serial.print("> Motion: ");
+  Serial.print("> HumanDetect: ");
 
   String humanDetection = "None";
 
@@ -79,8 +79,9 @@ void loop()
 
     // Deserialization to JSON
     DeserializationError error = deserializeJson(ledJsonData, stringData);
-    blynk_mode = ledJsonData["Blynk_Mode"];
+    blynk_mode = ledJsonData["Blynk_MODE"];
     blynk_led = ledJsonData["Blynk_LED"];
+    Serial.printf("\t\tBlynk_MODE:%d,Blynk_LED:%d\n", blynk_mode, blynk_led);
   }
 
   if (blynk_mode == 1)
@@ -102,16 +103,22 @@ void loop()
   else
   {
     // Manual
-    if (blynk_led == 1)
+    if (motionDetected == HIGH && ((distance > 0.0) && (distance < 200.0)))
     {
       humanDetection = "Detected";
-      Serial.println("Detected");
+    }
+    else{
+      humanDetection = "None-Detected";
+    }
+    if (blynk_led == 1)
+    {
+      
+      Serial.println("LED ON");
       digitalWrite(relayPin, HIGH); // Turn ON relay (12V LED ON)
     }
     else
     {
-      humanDetection = "None";
-      Serial.println("None-Detected");
+      Serial.println("LED OFF");
       digitalWrite(relayPin, LOW); // Turn OFF relay (12V LED OFF)
     }
   }
